@@ -1,0 +1,36 @@
+name: Build Cursed Nexus APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract project
+        run: |
+          unzip -o GojoToolbox-Android-Project.zip
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Build APK
+        working-directory: GojoToolbox
+        run: |
+          chmod +x gradlew 2>/dev/null || true
+          ./gradlew assembleDebug || gradle assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Cursed-Nexus-APK
+          path: GojoToolbox/app/build/outputs/apk/debug/*.apk
